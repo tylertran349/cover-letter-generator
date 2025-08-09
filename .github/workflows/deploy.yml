@@ -1,0 +1,49 @@
+# Name for your workflow, which will appear in the "Actions" tab of your repo
+name: Deploy React App to GitHub Pages
+
+# Controls when the action will run.
+on:
+  # Triggers the workflow on push events but only for the "main" branch
+  push:
+    branches: [ "main" ]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build-and-deploy"
+  build-and-deploy:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Sets the permissions for the GITHUB_TOKEN to allow deployment to GitHub Pages
+    permissions:
+      contents: write
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      # 1. Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - name: Checkout Repo
+        uses: actions/checkout@v4
+
+      # 2. Sets up Node.js in the runner
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Use a recent LTS version of Node.js
+
+      # 3. Installs dependencies. 'npm ci' is recommended for CI for faster, reliable installs
+      - name: Install Dependencies
+        run: npm ci
+
+      # 4. Runs the build script defined in package.json
+      # The homepage property in package.json is crucial here for correct asset paths
+      - name: Build Project
+        run: npm run build
+
+      # 5. Deploys the built app to the 'gh-pages' branch
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build
