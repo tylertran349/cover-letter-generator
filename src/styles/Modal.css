@@ -15,7 +15,7 @@
   background-color: white;
   padding: 25px;
   border-radius: 8px;
-  width: 70vw; /* Make the modal wider */
+  width: 70vw;
   max-width: 900px;
   box-shadow: 0 4px 8px rgba(0,0,0,0.2);
 }
@@ -25,10 +25,51 @@
 }
 
 .modal-content .input-group textarea {
-  height: 40vh; /* Make the resume textarea taller */
+  height: 40vh;
 }
 
 .modal-actions {
   text-align: right;
   margin-top: 20px;
+}
+
+.slider-container {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.temperature-slider {
+  flex-grow: 1;
+  margin: 0;
+  padding: 0;
+}
+
+input[type=range].temperature-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  background: #ddd;
+  border-radius: 5px;
+  outline: none;
+}
+
+input[type=range].temperature-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  background: #007bff;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+input[type=range].temperature-slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  background: #007bff;
+  cursor: pointer;
+  border-radius: 50%;
+  border: none;
 }

@@ -1,10 +1,13 @@
-// src/components/SettingsModal.js
 import React, { useState, useEffect } from 'react';
 import '../styles/Modal.css';
 import '../styles/Form.css';
 
-// --- ACCEPT NEW PROPS ---
-function SettingsModal({ resume, setResume, closeModal, clearInput, model, setModel }) {
+function SettingsModal({
+  resume, setResume,
+  closeModal, clearInput,
+  model, setModel,
+  temperature, setTemperature
+}) {
   const [apiKey, setApiKey] = useState('');
 
   useEffect(() => {
@@ -16,7 +19,6 @@ function SettingsModal({ resume, setResume, closeModal, clearInput, model, setMo
 
   const handleSave = () => {
     localStorage.setItem('gemini-api-key', apiKey);
-    // The model and resume are already saved by useEffect in App.js
     closeModal();
   };
 
@@ -24,6 +26,7 @@ function SettingsModal({ resume, setResume, closeModal, clearInput, model, setMo
     <div className="modal-overlay">
       <div className="modal-content">
         <h2>Settings</h2>
+
         <div className="input-group">
           <label htmlFor="apiKey">Gemini API Key</label>
           <input
@@ -35,7 +38,6 @@ function SettingsModal({ resume, setResume, closeModal, clearInput, model, setMo
           />
         </div>
 
-        {/* --- ADD MODEL DROPDOWN --- */}
         <div className="input-group">
           <label htmlFor="model-select">Model</label>
           <select id="model-select" value={model} onChange={(e) => setModel(e.target.value)}>
@@ -43,6 +45,24 @@ function SettingsModal({ resume, setResume, closeModal, clearInput, model, setMo
             <option value="gemini-2.5-flash">gemini-2.5-flash</option>
             <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite</option>
           </select>
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="temperature-slider">Temperature: {Number(temperature).toFixed(1)}</label>
+          <div className="slider-container">
+            <span>0.0</span>
+            <input
+              type="range"
+              id="temperature-slider"
+              min="0"
+              max="2"
+              step="0.1"
+              value={temperature}
+              onChange={(e) => setTemperature(e.target.value)}
+              className="temperature-slider"
+            />
+            <span>2.0</span>
+          </div>
         </div>
 
         <div className="input-group">

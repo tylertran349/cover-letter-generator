@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import CoverLetterForm from './components/CoverLetterForm';
@@ -26,6 +25,12 @@ function App() {
     return localStorage.getItem('gemini-model') || 'gemini-2.5-pro';
   });
 
+  // State for temperature, loaded from localStorage or set to default
+  const [temperature, setTemperature] = useState(() => {
+    // localStorage stores strings, so we parse it to a number
+    return parseFloat(localStorage.getItem('gemini-temperature')) || 1.0;
+  });
+
   // State for the resume, loaded from localStorage
   const [resume, setResume] = useState(() => {
     return localStorage.getItem('user-resume') || '';
@@ -35,6 +40,11 @@ function App() {
   useEffect(() => {
     localStorage.setItem('gemini-model', model);
   }, [model]);
+
+  // Effect to save the temperature to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('gemini-temperature', temperature);
+  }, [temperature]);
 
   // Effect to save the user's resume to localStorage whenever it changes
   useEffect(() => {
@@ -79,6 +89,9 @@ function App() {
         `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
         {
           contents: [{ parts: [{ text: prompt }] }],
+          generationConfig: {
+            temperature: Number(temperature), // Ensure temperature is a number
+          },
         }
       );
       setGeneratedResponse(response.data.candidates[0].content.parts[0].text.trim());
@@ -138,6 +151,8 @@ function App() {
           clearInput={clearInput}
           model={model}
           setModel={setModel}
+          temperature={temperature}
+          setTemperature={setTemperature}
         />
       )}
     </div>

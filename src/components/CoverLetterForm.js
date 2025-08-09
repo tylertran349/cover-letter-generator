@@ -1,4 +1,3 @@
-// src/components/CoverLetterForm.js
 import React from 'react';
 import '../styles/Form.css';
 
