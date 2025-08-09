@@ -1,0 +1,62 @@
+.form-container {
+  margin-bottom: 20px;
+}
+
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group label {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.input-group input,
+.input-group textarea,
+.input-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Ensures padding doesn't affect width */
+    background-color: #fff;
+    font-family: inherit;
+    font-size: 1em;
+}
+
+textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.clear-button {
+    display: block;
+    width: -moz-fit-content; /* For Firefox compatibility */
+    width: fit-content;   /* Make button only as wide as its content */
+    margin-left: 0;       /* Align to the left edge */
+    margin-right: auto;   /* Keep it on the left */
+    margin-top: 6px;      /* Add space between input and button */
+    padding: 5px 10px;
+    font-size: 0.8em;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.clear-button:hover {
+    background-color: #ddd;
+}
+
+.form-container > button {
+  padding: 10px 15px;
+  border: none;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.form-container > button:hover {
+  background-color: #0056b3;
+}
