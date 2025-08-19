@@ -1,0 +1,33 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main # This workflow will run when you push to the 'main' branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest # Uses the latest Ubuntu environment
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4 # Action to checkout your repository code
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20' # Use an LTS Node.js version, e.g., '18', '20', or '22'
+          cache: 'npm' # Caches npm dependencies to speed up builds
+
+      - name: Install dependencies
+        run: npm ci # 'npm ci' is preferred for CI/CD environments as it ensures clean install
+
+      - name: Build React app
+        run: npm run build # Runs your 'build' script defined in package.json
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }} # Automatically provided token for authentication
+          publish_dir: ./build # Directory to deploy (your React build output)
+          publish_branch: gh-pages # The branch where your GitHub Pages will be hosted from

@@ -78,10 +78,11 @@ function App() {
       ${taskInstruction}
 
       **OUTPUT RULES:**
-      1.  Use the vocabulary of a college freshman but maintain a formal tone.
-      2.  Your response MUST contain ONLY the text of the cover letter or the answer.
-      3.  DO NOT include any introductory phrases, headings, titles, or conversational text like "Here is the cover letter:" or "Based on the information provided...".
-      4.  The output must begin directly with the first word of the cover letter (e.g., "Dear Hiring Manager,") or the answer. Do not add any text before it.
+      1. Use the vocabulary of a college freshman but maintain a formal tone.
+      2. Your response MUST contain ONLY the text of the cover letter or the answer.
+      3. DO NOT include any introductory phrases, headings, titles, or conversational text like "Here is the cover letter:" or "Based on the information provided...".
+      4. The output must begin directly with the first word of the cover letter (e.g., "Dear Hiring Manager,") or the answer. Do not add any text before it.
+      5. If signing off, only include my full name. DO NOT include my phone number, email, or LinkedIn account.
     `;
 
     try {
@@ -90,11 +91,21 @@ function App() {
         {
           contents: [{ parts: [{ text: prompt }] }],
           generationConfig: {
-            temperature: Number(temperature), // Ensure temperature is a number
+            temperature: Number(temperature),
           },
         }
       );
-      setGeneratedResponse(response.data.candidates[0].content.parts[0].text.trim());
+
+      // --- ADD THIS CHECK ---
+      // Check if the candidates array exists and is not empty
+      if (response.data.candidates && response.data.candidates.length > 0) {
+        setGeneratedResponse(response.data.candidates[0].content.parts[0].text.trim());
+      } else {
+        // If there are no candidates, it was likely blocked by safety settings.
+        console.log("API Response was blocked:", response.data); // Log the reason for debugging
+        setGeneratedResponse("The response was blocked by the API's safety filters. Try adjusting your input.");
+      }
+      
     } catch (error) {
       console.error('Error generating response:', error);
       let errorMessage = 'An error occurred. Please check the console for more details.';
