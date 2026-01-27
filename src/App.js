@@ -22,7 +22,11 @@ function App() {
 
   // State for the model, loaded from localStorage or set to default
   const [model, setModel] = useState(() => {
-    return localStorage.getItem('gemini-model') || 'gemini-2.5-pro';
+    const savedModel = localStorage.getItem('gemini-model');
+    if (!savedModel || savedModel.startsWith('gemini-2.5')) {
+      return 'gemini-3-flash-preview';
+    }
+    return savedModel;
   });
 
   // State for temperature, loaded from localStorage or set to default
@@ -81,8 +85,8 @@ function App() {
       1. Use the vocabulary of a college freshman but maintain a formal tone.
       2. Your response MUST contain ONLY the text of the cover letter or the answer.
       3. DO NOT include any introductory phrases, headings, titles, or conversational text like "Here is the cover letter:" or "Based on the information provided...".
-      4. The output must begin directly with the first word of the cover letter (e.g., "Dear Hiring Manager,") or the answer. Do not add any text before it.
-      5. If signing off, only include my full name. DO NOT include my phone number, email, or LinkedIn account.
+      4. For COVER LETTERS: Begin with a formal salutation (e.g., "Dear Hiring Manager,") and end with a sign-off containing ONLY my full name.
+      5. For JOB APPLICATION ANSWERS: DO NOT include any salutations, signatures, names, or contact information. Provide ONLY the answer text.
     `;
 
     try {
@@ -105,12 +109,12 @@ function App() {
         console.log("API Response was blocked:", response.data); // Log the reason for debugging
         setGeneratedResponse("The response was blocked by the API's safety filters. Try adjusting your input.");
       }
-      
+
     } catch (error) {
       console.error('Error generating response:', error);
       let errorMessage = 'An error occurred. Please check the console for more details.';
       if (error.response && error.response.data && error.response.data.error) {
-          errorMessage = `Error from API: ${error.response.data.error.message}`;
+        errorMessage = `Error from API: ${error.response.data.error.message}`;
       }
       setGeneratedResponse(errorMessage);
     } finally {

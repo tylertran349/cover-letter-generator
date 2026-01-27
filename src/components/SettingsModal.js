@@ -65,9 +65,7 @@ function SettingsModal({
         <div className="input-group">
           <label htmlFor="model-select">Model</label>
           <select id="model-select" value={model} onChange={(e) => setModel(e.target.value)}>
-            <option value="gemini-2.5-pro">gemini-2.5-pro</option>
-            <option value="gemini-2.5-flash">gemini-2.5-flash</option>
-            <option value="gemini-2.5-flash-lite">gemini-2.5-flash-lite</option>
+            <option value="gemini-3-flash-preview">gemini-3-flash-preview</option>
           </select>
         </div>
 
