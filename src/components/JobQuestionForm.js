@@ -11,6 +11,9 @@ function JobQuestionForm({
   setJobDescription,
   jobQuestion,
   setJobQuestion,
+  resumePdfs,
+  selectedResumeId,
+  setSelectedResumeId,
   clearInput,
   onGenerate,
 }) {
@@ -54,6 +57,25 @@ function JobQuestionForm({
           onChange={(e) => setJobQuestion(e.target.value)}
         ></textarea>
         <button className="clear-button" onClick={() => clearInput(setJobQuestion)}>Clear</button>
+      </div>
+      <div className="input-group">
+        <label htmlFor="jobQuestionResume">Resume PDF</label>
+        <select
+          id="jobQuestionResume"
+          value={selectedResumeId}
+          onChange={(e) => setSelectedResumeId(e.target.value)}
+          disabled={resumePdfs.length === 0}
+        >
+          {resumePdfs.length === 0 ? (
+            <option value="">Upload a resume PDF in Settings</option>
+          ) : (
+            resumePdfs.map((resumePdf) => (
+              <option key={resumePdf.id} value={resumePdf.id}>
+                {resumePdf.name}
+              </option>
+            ))
+          )}
+        </select>
       </div>
       <button onClick={onGenerate}>Generate Answer</button>
     </div>

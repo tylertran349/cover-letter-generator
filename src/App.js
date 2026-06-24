@@ -8,6 +8,19 @@ import axios from 'axios';
 
 import './styles/App.css';
 
+const DEFAULT_MODEL = 'gemini-3.5-flash';
+
+const loadStoredResumes = () => {
+  try {
+    const storedResumes = JSON.parse(localStorage.getItem('user-resume-pdfs') || '[]');
+    return Array.isArray(storedResumes)
+      ? storedResumes.filter((resumePdf) => resumePdf.id && resumePdf.name && resumePdf.dataUrl)
+      : [];
+  } catch {
+    return [];
+  }
+};
+
 function App() {
   const [mode, setMode] = useState('cover-letter');
   const [companyName, setCompanyName] = useState('');
@@ -23,8 +36,8 @@ function App() {
   // State for the model, loaded from localStorage or set to default
   const [model, setModel] = useState(() => {
     const savedModel = localStorage.getItem('gemini-model');
-    if (!savedModel || savedModel.startsWith('gemini-2.5')) {
-      return 'gemini-3-flash-preview';
+    if (!savedModel || savedModel !== DEFAULT_MODEL) {
+      return DEFAULT_MODEL;
     }
     return savedModel;
   });
@@ -35,10 +48,12 @@ function App() {
     return parseFloat(localStorage.getItem('gemini-temperature')) || 1.0;
   });
 
-  // State for the resume, loaded from localStorage
-  const [resume, setResume] = useState(() => {
-    return localStorage.getItem('user-resume') || '';
+  // State for uploaded resume PDFs, loaded from localStorage
+  const [resumePdfs, setResumePdfs] = useState(loadStoredResumes);
+  const [selectedResumeId, setSelectedResumeId] = useState(() => {
+    return localStorage.getItem('selected-resume-pdf-id') || '';
   });
+  const [resumeStorageError, setResumeStorageError] = useState('');
 
   // Effect to save the selected model to localStorage whenever it changes
   useEffect(() => {
@@ -50,16 +65,42 @@ function App() {
     localStorage.setItem('gemini-temperature', temperature);
   }, [temperature]);
 
-  // Effect to save the user's resume to localStorage whenever it changes
+  // Effect to save uploaded resume PDFs to localStorage whenever they change
   useEffect(() => {
-    localStorage.setItem('user-resume', resume);
-  }, [resume]);
+    try {
+      localStorage.setItem('user-resume-pdfs', JSON.stringify(resumePdfs));
+      setResumeStorageError('');
+    } catch {
+      setResumeStorageError('Could not save resume PDFs. Try deleting a large resume and uploading a smaller PDF.');
+    }
+  }, [resumePdfs]);
+
+  useEffect(() => {
+    if (resumePdfs.length === 0) {
+      setSelectedResumeId('');
+      localStorage.removeItem('selected-resume-pdf-id');
+      return;
+    }
+
+    const selectedResumeExists = resumePdfs.some((resumePdf) => resumePdf.id === selectedResumeId);
+    if (!selectedResumeExists) {
+      setSelectedResumeId(resumePdfs[0].id);
+    } else {
+      localStorage.setItem('selected-resume-pdf-id', selectedResumeId);
+    }
+  }, [resumePdfs, selectedResumeId]);
 
 
   const handleGenerate = async () => {
     const apiKey = localStorage.getItem('gemini-api-key');
     if (!apiKey) {
       setGeneratedResponse('API Key not found. Please set it in the Settings menu.');
+      return;
+    }
+
+    const selectedResume = resumePdfs.find((resumePdf) => resumePdf.id === selectedResumeId);
+    if (!selectedResume) {
+      setGeneratedResponse('Please upload and select a resume PDF in Settings before generating a response.');
       return;
     }
 
@@ -76,7 +117,7 @@ function App() {
       - Company Name: ${companyName}
       - Role/Job Name: ${role}
       - Job Description: ${jobDescription}
-      - My Resume: ${resume}
+      - Selected Resume PDF: ${selectedResume.name}
 
       **TASK:**
       ${taskInstruction}
@@ -87,13 +128,29 @@ function App() {
       3. DO NOT include any introductory phrases, headings, titles, or conversational text like "Here is the cover letter:" or "Based on the information provided...".
       4. For COVER LETTERS: Begin with a formal salutation (e.g., "Dear Hiring Manager,") and end with a sign-off containing ONLY my full name.
       5. For JOB APPLICATION ANSWERS: DO NOT include any salutations, signatures, names, or contact information. Provide ONLY the answer text.
+      6. Make the writing sound natural and human, not like it was written by AI.
+      7. Use simple grammar only. Keep sentences clear and direct.
+      8. Use only commas and periods for punctuation. Do not use semicolons, colons, dashes, parentheses, bullet points, or numbered lists.
+      9. Keep the response as short and concise as possible. Remove all fluff and only include details that directly help answer the prompt.
     `;
+
+    const resumeData = selectedResume.dataUrl.split(',')[1];
 
     try {
       const response = await axios.post(
         `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`,
         {
-          contents: [{ parts: [{ text: prompt }] }],
+          contents: [{
+            parts: [
+              { text: prompt },
+              {
+                inlineData: {
+                  mimeType: selectedResume.type || 'application/pdf',
+                  data: resumeData,
+                },
+              },
+            ],
+          }],
           generationConfig: {
             temperature: Number(temperature),
           },
@@ -138,6 +195,9 @@ function App() {
             setRole={setRole}
             jobDescription={jobDescription}
             setJobDescription={setJobDescription}
+            resumePdfs={resumePdfs}
+            selectedResumeId={selectedResumeId}
+            setSelectedResumeId={setSelectedResumeId}
             clearInput={clearInput}
             onGenerate={handleGenerate}
           />
@@ -151,6 +211,9 @@ function App() {
             setJobDescription={setJobDescription}
             jobQuestion={jobQuestion}
             setJobQuestion={setJobQuestion}
+            resumePdfs={resumePdfs}
+            selectedResumeId={selectedResumeId}
+            setSelectedResumeId={setSelectedResumeId}
             clearInput={clearInput}
             onGenerate={handleGenerate}
           />
@@ -160,10 +223,12 @@ function App() {
       </main>
       {isSettingsOpen && (
         <SettingsModal
-          resume={resume}
-          setResume={setResume}
+          resumePdfs={resumePdfs}
+          setResumePdfs={setResumePdfs}
+          selectedResumeId={selectedResumeId}
+          setSelectedResumeId={setSelectedResumeId}
+          resumeStorageError={resumeStorageError}
           closeModal={() => setIsSettingsOpen(false)}
-          clearInput={clearInput}
           model={model}
           setModel={setModel}
           temperature={temperature}

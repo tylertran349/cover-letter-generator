@@ -48,6 +48,34 @@ textarea {
     background-color: #ddd;
 }
 
+.helper-text {
+  color: #666;
+  font-size: 0.9em;
+  margin: 8px 0 0;
+}
+
+.error-text {
+  color: #b00020;
+  font-size: 0.9em;
+  margin: 8px 0 0;
+}
+
+.resume-list {
+  margin-top: 8px;
+}
+
+.resume-list-item {
+  align-items: center;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  padding: 6px 0;
+}
+
+.resume-list-item .clear-button {
+  margin: 0;
+}
+
 .form-container > button {
   padding: 10px 15px;
   border: none;

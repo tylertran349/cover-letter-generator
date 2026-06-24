@@ -8,6 +8,9 @@ function CoverLetterForm({
   setRole,
   jobDescription,
   setJobDescription,
+  resumePdfs,
+  selectedResumeId,
+  setSelectedResumeId,
   clearInput,
   onGenerate,
 }) {
@@ -42,6 +45,25 @@ function CoverLetterForm({
           onChange={(e) => setJobDescription(e.target.value)}
         ></textarea>
         <button className="clear-button" onClick={() => clearInput(setJobDescription)}>Clear</button>
+      </div>
+      <div className="input-group">
+        <label htmlFor="coverLetterResume">Resume PDF</label>
+        <select
+          id="coverLetterResume"
+          value={selectedResumeId}
+          onChange={(e) => setSelectedResumeId(e.target.value)}
+          disabled={resumePdfs.length === 0}
+        >
+          {resumePdfs.length === 0 ? (
+            <option value="">Upload a resume PDF in Settings</option>
+          ) : (
+            resumePdfs.map((resumePdf) => (
+              <option key={resumePdf.id} value={resumePdf.id}>
+                {resumePdf.name}
+              </option>
+            ))
+          )}
+        </select>
       </div>
       <button onClick={onGenerate}>Generate Cover Letter</button>
     </div>
