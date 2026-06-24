@@ -8,7 +8,7 @@ import axios from 'axios';
 
 import './styles/App.css';
 
-const DEFAULT_MODEL = 'gemini-3.5-flash';
+const DEFAULT_MODEL = 'gemini-flash-latest';
 
 const loadStoredResumes = () => {
   try {
