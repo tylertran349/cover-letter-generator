@@ -117,7 +117,7 @@ function SettingsModal({
         <div className="input-group">
           <label htmlFor="model-select">Model</label>
           <select id="model-select" value={model} onChange={(e) => setModel(e.target.value)}>
-            <option value="gemini-flash-latest">gemini-flash-latest</option>
+            <option value="gemini-3-flash-preview">gemini-3-flash-preview</option>
           </select>
         </div>
 
