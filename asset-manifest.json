@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/cover-letter-generator/static/css/main.2a099275.css",
-    "main.js": "/cover-letter-generator/static/js/main.cf07fad5.js",
+    "main.js": "/cover-letter-generator/static/js/main.f29047b3.js",
     "static/js/453.0925f20a.chunk.js": "/cover-letter-generator/static/js/453.0925f20a.chunk.js",
     "index.html": "/cover-letter-generator/index.html",
     "main.2a099275.css.map": "/cover-letter-generator/static/css/main.2a099275.css.map",
-    "main.cf07fad5.js.map": "/cover-letter-generator/static/js/main.cf07fad5.js.map",
+    "main.f29047b3.js.map": "/cover-letter-generator/static/js/main.f29047b3.js.map",
     "453.0925f20a.chunk.js.map": "/cover-letter-generator/static/js/453.0925f20a.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.2a099275.css",
-    "static/js/main.cf07fad5.js"
+    "static/js/main.f29047b3.js"
   ]
 }
