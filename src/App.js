@@ -35,11 +35,7 @@ function App() {
 
   // State for the model, loaded from localStorage or set to default
   const [model, setModel] = useState(() => {
-    const savedModel = localStorage.getItem('gemini-model');
-    if (!savedModel || savedModel !== DEFAULT_MODEL) {
-      return DEFAULT_MODEL;
-    }
-    return savedModel;
+    return localStorage.getItem('gemini-model') || DEFAULT_MODEL;
   });
 
   // State for temperature, loaded from localStorage or set to default
