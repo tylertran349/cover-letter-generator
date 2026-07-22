@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'; // Import useRef
+import { DEFAULT_SYSTEM_PROMPT } from '../constants';
 import '../styles/Modal.css';
 import '../styles/Form.css';
 
@@ -8,7 +9,8 @@ function SettingsModal({
   resumeStorageError,
   closeModal, // This function is crucial for closing the modal
   model, setModel,
-  temperature, setTemperature
+  temperature, setTemperature,
+  systemPrompt, setSystemPrompt
 }) {
   const [apiKey, setApiKey] = useState('');
   const modalRef = useRef(null); // Create a ref to attach to the modal's content div
@@ -141,6 +143,26 @@ function SettingsModal({
             />
             <span>2.0</span>
           </div>
+        </div>
+
+        <div className="input-group">
+          <label htmlFor="system-prompt">System Prompt</label>
+          <textarea
+            id="system-prompt"
+            value={systemPrompt}
+            onChange={(e) => setSystemPrompt(e.target.value)}
+            placeholder="Enter the system prompt used when generating responses"
+          />
+          <p className="helper-text">
+            Placeholders: {'{{companyName}}'}, {'{{role}}'}, {'{{jobDescription}}'}, {'{{resumeName}}'}, {'{{taskInstruction}}'}
+          </p>
+          <button
+            type="button"
+            className="clear-button"
+            onClick={() => setSystemPrompt(DEFAULT_SYSTEM_PROMPT)}
+          >
+            Reset to Default
+          </button>
         </div>
 
         <div className="input-group">

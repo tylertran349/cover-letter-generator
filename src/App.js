@@ -5,10 +5,9 @@ import JobQuestionForm from './components/JobQuestionForm';
 import SettingsModal from './components/SettingsModal';
 import ResponseDisplay from './components/ResponseDisplay';
 import axios from 'axios';
+import { DEFAULT_MODEL, DEFAULT_SYSTEM_PROMPT } from './constants';
 
 import './styles/App.css';
-
-const DEFAULT_MODEL = 'gemini-3-flash-preview';
 
 const loadStoredResumes = () => {
   try {
@@ -44,6 +43,11 @@ function App() {
     return parseFloat(localStorage.getItem('gemini-temperature')) || 1.0;
   });
 
+  // State for the system prompt, loaded from localStorage or set to default
+  const [systemPrompt, setSystemPrompt] = useState(() => {
+    return localStorage.getItem('gemini-system-prompt') || DEFAULT_SYSTEM_PROMPT;
+  });
+
   // State for uploaded resume PDFs, loaded from localStorage
   const [resumePdfs, setResumePdfs] = useState(loadStoredResumes);
   const [selectedResumeId, setSelectedResumeId] = useState(() => {
@@ -60,6 +64,11 @@ function App() {
   useEffect(() => {
     localStorage.setItem('gemini-temperature', temperature);
   }, [temperature]);
+
+  // Effect to save the system prompt to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('gemini-system-prompt', systemPrompt);
+  }, [systemPrompt]);
 
   // Effect to save uploaded resume PDFs to localStorage whenever they change
   useEffect(() => {
@@ -108,27 +117,12 @@ function App() {
         ? 'Write a formal cover letter using the provided details.'
         : `Answer the following job application question using the provided details: "${jobQuestion}"`;
 
-    const prompt = `
-      **CONTEXT:**
-      - Company Name: ${companyName}
-      - Role/Job Name: ${role}
-      - Job Description: ${jobDescription}
-      - Selected Resume PDF: ${selectedResume.name}
-
-      **TASK:**
-      ${taskInstruction}
-
-      **OUTPUT RULES:**
-      1. Use the vocabulary of a college freshman but maintain a formal tone.
-      2. Your response MUST contain ONLY the text of the cover letter or the answer.
-      3. DO NOT include any introductory phrases, headings, titles, or conversational text like "Here is the cover letter:" or "Based on the information provided...".
-      4. For COVER LETTERS: Begin with a formal salutation (e.g., "Dear Hiring Manager,") and end with a sign-off containing ONLY my full name.
-      5. For JOB APPLICATION ANSWERS: DO NOT include any salutations, signatures, names, or contact information. Provide ONLY the answer text.
-      6. Make the writing sound natural and human, not like it was written by AI.
-      7. Use simple grammar only. Keep sentences clear and direct.
-      8. Use only commas and periods for punctuation. Do not use semicolons, colons, dashes, parentheses, bullet points, or numbered lists.
-      9. Keep the response as short and concise as possible. Remove all fluff and only include details that directly help answer the prompt.
-    `;
+    const prompt = systemPrompt
+      .replaceAll('{{companyName}}', companyName)
+      .replaceAll('{{role}}', role)
+      .replaceAll('{{jobDescription}}', jobDescription)
+      .replaceAll('{{resumeName}}', selectedResume.name)
+      .replaceAll('{{taskInstruction}}', taskInstruction);
 
     const resumeData = selectedResume.dataUrl.split(',')[1];
 
@@ -229,6 +223,8 @@ function App() {
           setModel={setModel}
           temperature={temperature}
           setTemperature={setTemperature}
+          systemPrompt={systemPrompt}
+          setSystemPrompt={setSystemPrompt}
         />
       )}
     </div>
